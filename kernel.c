@@ -109,10 +109,9 @@ void terminal_writestring(const char* data)
 
 void kernel_main(void) 
 {
-	/* Initialize terminal interface */
 	terminal_initialize();
 
-	/* Newline support is left as an exercise. */
 	terminal_writestring("hello chat its me spooly\n");
+  terminal_setcolor(VGA_COLOR_GREEN);
   terminal_writestring("hello its me again chat i cooked\n");
 }
