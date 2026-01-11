@@ -2,6 +2,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#define INPUT_BUFFER 128
+
 enum vga_color {
 	VGA_COLOR_BLACK = 0,
 	VGA_COLOR_BLUE = 1,
@@ -20,6 +22,7 @@ enum vga_color {
 	VGA_COLOR_LIGHT_BROWN = 14,
 	VGA_COLOR_WHITE = 15,
 };
+
 
 static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg) 
 {
@@ -117,10 +120,23 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y) {
 }
 
 void terminal_putchar(char c) {
-  if(c == '\n' || c == '\t') {
+  if(c == '\n') {
     terminal_row++;
     terminal_column = 0;
     move_cursor(terminal_row, terminal_column);
+    return;
+  }
+  if(c == '\r') {
+    terminal_column = 0;
+    move_cursor(terminal_row, terminal_column);
+    return;
+  }
+  if(c == '\b') {
+    if(!(terminal_column == 0) && !(terminal_row == 0)) {
+      terminal_column--;
+      move_cursor(terminal_row, terminal_column);
+      terminal_putentryat(' ', terminal_color, terminal_column, terminal_row);
+    }
     return;
   }
 	terminal_putentryat(c, terminal_color, terminal_column, terminal_row);
@@ -191,25 +207,41 @@ char map(uint8_t scancode) {
 
 // non-skidded part:
 
+void handle_command(char *command) {
+  terminal_writestring("\nHandling command: ");
+  terminal_writestring(command);
+}
+
 void kernel_main(void) {
 	terminal_initialize();
 
   enable_cursor(13, 15);
 
-	terminal_writestring("SpoolyOS\n");
-  terminal_setcolor(VGA_COLOR_CYAN);
-  terminal_writestring("  Command functionality does not exist yet.\n\n");
-  terminal_setcolor(VGA_COLOR_WHITE);
+	terminal_writestring("          SpoolyOS\n");
+  terminal_setcolor(VGA_COLOR_MAGENTA);
+  terminal_writestring("\nCommand functionality exists. Type ");
+  terminal_setcolor(VGA_COLOR_LIGHT_CYAN);
+  terminal_writestring("help");
+  terminal_setcolor(VGA_COLOR_MAGENTA);
+  terminal_writestring(" for more information.\n\n");
 
+  terminal_setcolor(VGA_COLOR_WHITE);
   terminal_putchar('>');
   terminal_setcolor(VGA_COLOR_WHITE);
 
   // this should be input working not non-skidded
 
   uint8_t last = 0;
+  char input_buf[INPUT_BUFFER];
+  size_t input_len = 0;
   while(1) {
+    if(last == 0) {
+      last = 1;
+      continue;
+    }
     uint8_t scanned = inb(0x60);
     if(scanned & 0x80) {
+      last = scanned;
       continue;
     }
     if(last == scanned) {
@@ -217,8 +249,23 @@ void kernel_main(void) {
     }
     
     char input = map(scanned);
-    if(input) {
+    if(input && input_len < INPUT_BUFFER-2) {
+      if(input == '\n') {
+        input_buf[input_len] = '\0';
+        if(input_len != 0) {
+          handle_command(input_buf);
+        }
+        input_len = 0;
+        terminal_writestring("\r\n>"); // newline before prompt
+        input_buf[input_len] = input;
+        input_len++;
+        last = scanned;
+        continue;
+      }
       terminal_putchar(input);
+
+      input_buf[input_len] = input;
+      input_len++;
     }
     last = scanned;
   }
