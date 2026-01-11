@@ -130,9 +130,29 @@ void clear_screen(void) {
 
 }
 
+uint16_t make_vgaentry(char c, uint8_t color) {
+    return (uint16_t)c | ((uint16_t)color << 8);
+}
+
+
+void terminal_scroll() {
+    for (size_t y = 1; y < VGA_HEIGHT; y++) {
+        for (size_t x = 0; x < VGA_WIDTH; x++) {
+            terminal_buffer[(y-1)*VGA_WIDTH + x] = terminal_buffer[y*VGA_WIDTH + x];
+        }
+    }
+
+    for (size_t x = 0; x < VGA_WIDTH; x++) {
+        terminal_buffer[(VGA_HEIGHT-1)*VGA_WIDTH + x] = make_vgaentry(' ', terminal_color);
+    }
+
+    terminal_row--;
+}
+
+
 void terminal_putchar(char c) {
   if(terminal_row == VGA_HEIGHT) {
-    clear_screen();
+    terminal_scroll();
   }
 
   if(c == '\n') {
