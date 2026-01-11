@@ -1,0 +1,5 @@
+/build/
+/isodir/boot/*.bin
+/.cache
+
+/*iso

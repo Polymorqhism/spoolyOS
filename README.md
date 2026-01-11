@@ -1,5 +1,19 @@
-# WARNING!
-this is SKIDDED off https://wiki.osdev.org/Bare_Bones **and WE have NO idea what we are doing**
-it is also being modified without external help
+## spoolyOS
 
-## DO NOT USE THIS
+C, Assembly, and a dream!
+
+creds:
+- polymorphic (skidded off https://wiki.osdev.org/Bare_Bones)
+- foreverskk (emotional support)
+
+build:
+```bash
+./scripts/build.py
+```
+
+run:
+```bash
+./scripts/isorun.sh
+```
+
+I am too lazy to write all the dependencies you need to build this thing so I'll leave it to poly.
