@@ -2,4 +2,4 @@
 /isodir/boot/*.bin
 /.cache
 
-/*iso
+*iso
