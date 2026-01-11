@@ -3,6 +3,8 @@
 #include <stdint.h>
 
 #define INPUT_BUFFER 128
+#define MAX_ARGS 8
+#define ARG_LEN 16
 
 enum vga_color {
 	VGA_COLOR_BLACK = 0,
@@ -71,6 +73,20 @@ void terminal_initialize(void) {
 		}
 	}
 }
+
+uint8_t str_to_uint8(const char *str) {
+    uint8_t result = 0;
+    for (size_t i = 0; str[i] != '\0'; i++) {
+        char c = str[i];
+        if (c >= '0' && c <= '9') {
+            result = result * 10 + (c - '0');
+        } else {
+            break;
+        }
+    }
+    return result;
+}
+
 static inline void outb(uint16_t port, uint8_t val) {
     asm volatile ( "outb %0, %1" : : "a"(val), "Nd"(port) );
 }
@@ -244,7 +260,7 @@ char map(uint8_t scancode) {
 
 int cmpstr(char *one, char *two) {
   if(strlen(one) == strlen(two)) {
-    for(int i = 0; i!=strlen(one); i++) {
+    for(size_t i = 0; i!=strlen(one); i++) {
       if(one[i] != two[i]) {
         return 1;
       }
@@ -256,13 +272,50 @@ int cmpstr(char *one, char *two) {
  
 // non-skidded part:
 
-void handle_command(char *command) {
+void handle_command(char *string) {
+
+  char args[MAX_ARGS][ARG_LEN] = {};
+
+    int current_arg = 0;
+    int pos = 0;
+
+    for (int i = 0; string[i] != '\0'; i++) {
+        char c = string[i];
+
+        if (c == ' ') {
+            if (pos > 0) {
+                args[current_arg][pos] = '\0';
+                current_arg++;
+                pos = 0;
+                if (current_arg >= MAX_ARGS) break;
+            }
+        } else {
+            if (pos < ARG_LEN - 1) {
+                args[current_arg][pos++] = c;
+            }
+        }
+    }
+
+    if (pos > 0 && current_arg < MAX_ARGS) {
+        args[current_arg][pos] = '\0';
+    }
+
+    for (int a = current_arg + 1; a < MAX_ARGS; a++) {
+        args[a][0] = '\0';
+    }
+
+  // command interpretation
+
+  char *command = args[0];
+
   terminal_putchar('\n');
   if(!(cmpstr(command, "help"))) {
-    terminal_writestring("help - show this message\nclear - clear the screen\n");
+    terminal_writestring("help - show this message\nclear - clear the screen\ncolor [color code]\n");
   } else if(!(cmpstr(command, "clear"))) {
     clear_screen();
-  } else {
+  } else if(!(cmpstr(command, "color"))) {
+    terminal_setcolor(str_to_uint8(args[1]));
+  }else {
     terminal_writestring("Command not found: ");
     terminal_writestring(command);
     terminal_putchar('\n');
