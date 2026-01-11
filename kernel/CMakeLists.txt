@@ -39,9 +39,4 @@ if(NOT TARGET spoolyos.bin)
             -nostdlib
             -no-pie
     )
-
-    target_link_libraries(spoolyos.bin
-        PRIVATE
-            gcc
-    )
 endif()
