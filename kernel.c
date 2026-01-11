@@ -310,11 +310,15 @@ void handle_command(char *string) {
 
   terminal_putchar('\n');
   if(!(cmpstr(command, "help"))) {
-    terminal_writestring("help - show this message\nclear - clear the screen\ncolor [color code]\n");
+    terminal_writestring("help - show this message\nclear - clear the screen\ncolor [color code] - sets color of text\necho [text] - prints text out\n");
   } else if(!(cmpstr(command, "clear"))) {
     clear_screen();
   } else if(!(cmpstr(command, "color"))) {
     terminal_setcolor(str_to_uint8(args[1]));
+  }else if(!(cmpstr(command, "echo"))) {
+    for(int i = 0; i!=MAX_ARGS; i++) {
+      terminal_writestring(args[i]);
+    }
   }else {
     terminal_writestring("Command not found: ");
     terminal_writestring(command);

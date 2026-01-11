@@ -5,6 +5,6 @@ i686-elf-gcc -T linker.ld -o spoolyos.bin -ffreestanding -O2 -nostdlib boot.o ke
 grub-file --is-x86-multiboot spoolyos.bin
 echo $?
 mkdir -p isodir/boot/grub
-cp myos.bin isodir/boot/spoolyos.bin
+cp spoolyos.bin isodir/boot/spoolyos.bin
 cp grub.cfg isodir/boot/grub/grub.cfg
 grub-mkrescue -o spoolyos.iso isodir
