@@ -25,13 +25,6 @@ enum vga_color {
 	VGA_COLOR_WHITE = 15,
 };
 
-
-char *banner = "
-┌─┐┌─┐┌─┐┌─┐┬ ┬ ┬┌─┐┌─┐
-└─┐├─┘│ ││ ││ └┬┘│ │└─┐
-└─┘┴  └─┘└─┘┴─┘┴ └─┘└─┘
-"
-
 static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg) 
 {
 	return fg | bg << 4;
@@ -329,7 +322,7 @@ void kernel_main(void) {
 
   enable_cursor(13, 15);
 
-	terminal_writestring("          SpoolyOS\n");
+	terminal_writestring("              spoolyOS");
   terminal_setcolor(VGA_COLOR_MAGENTA);
   terminal_writestring("\nCommand functionality exists. Type ");
   terminal_setcolor(VGA_COLOR_LIGHT_CYAN);
