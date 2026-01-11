@@ -36,6 +36,7 @@ target_link_options(spoolyos.bin
         -T ${PROJECT_SOURCE_DIR}/linker/linker.ld
         -ffreestanding
         -nostdlib
+        -no-pie
 )
 
 target_link_libraries(spoolyos.bin
