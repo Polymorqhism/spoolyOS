@@ -119,7 +119,22 @@ void terminal_putentryat(char c, uint8_t color, size_t x, size_t y) {
 	terminal_buffer[index] = vga_entry(c, color);
 }
 
+void clear_screen(void) {
+  terminal_row = 0;
+  terminal_column = 0;
+  for(size_t height = 0; height != VGA_HEIGHT; height++) {
+    for(size_t width = 0; width != VGA_WIDTH; width++) {
+      terminal_putentryat(' ', terminal_color, width, height);
+    }
+  }
+
+}
+
 void terminal_putchar(char c) {
+  if(terminal_row == VGA_HEIGHT) {
+    clear_screen();
+  }
+
   if(c == '\n') {
     terminal_row++;
     terminal_column = 0;
@@ -205,11 +220,33 @@ char map(uint8_t scancode) {
     }
 }
 
+// REMIND ME TO TURN THIS INTO A STRING.H
+
+int cmpstr(char *one, char *two) {
+  if(strlen(one) == strlen(two)) {
+    for(int i = 0; i!=strlen(one); i++) {
+      if(one[i] != two[i]) {
+        return 1;
+      }
+    }
+  } else { return 1; }
+
+  return 0;
+}
+ 
 // non-skidded part:
 
 void handle_command(char *command) {
-  terminal_writestring("\nHandling command: ");
-  terminal_writestring(command);
+  terminal_putchar('\n');
+  if(!(cmpstr(command, "help"))) {
+    terminal_writestring("help - show this message\nclear - clear the screen\n");
+  } else if(!(cmpstr(command, "clear"))) {
+    clear_screen();
+  } else {
+    terminal_writestring("Command not found: ");
+    terminal_writestring(command);
+    terminal_putchar('\n');
+  }
 }
 
 void kernel_main(void) {
@@ -226,48 +263,49 @@ void kernel_main(void) {
   terminal_writestring(" for more information.\n\n");
 
   terminal_setcolor(VGA_COLOR_WHITE);
-  terminal_putchar('>');
+  terminal_writestring("\r\n[spoolyOS] > ");
   terminal_setcolor(VGA_COLOR_WHITE);
 
   // this should be input working not non-skidded
 
-  uint8_t last = 0;
+  uint8_t last_scancode = 0;
   char input_buf[INPUT_BUFFER];
   size_t input_len = 0;
-  while(1) {
-    if(last == 0) {
-      last = 1;
-      continue;
-    }
-    uint8_t scanned = inb(0x60);
-    if(scanned & 0x80) {
-      last = scanned;
-      continue;
-    }
-    if(last == scanned) {
-      continue;
-    }
-    
-    char input = map(scanned);
-    if(input && input_len < INPUT_BUFFER-2) {
-      if(input == '\n') {
-        input_buf[input_len] = '\0';
-        if(input_len != 0) {
-          handle_command(input_buf);
-        }
-        input_len = 0;
-        terminal_writestring("\r\n>"); // newline before prompt
-        input_buf[input_len] = input;
-        input_len++;
-        last = scanned;
-        continue;
-      }
-      terminal_putchar(input);
 
-      input_buf[input_len] = input;
-      input_len++;
-    }
-    last = scanned;
+  while (1) {
+      uint8_t scancode = inb(0x60);
+      if (scancode == last_scancode) continue;
+
+      last_scancode = scancode;
+
+      if (scancode & 0x80) continue;
+
+      char input = map(scancode);
+      if (input == 0) continue;
+
+      if (input == '\n') {
+          input_buf[input_len] = '\0';
+          if (input_len > 0) {
+              handle_command(input_buf);
+          }
+          input_len = 0;
+          terminal_writestring("\r\n[spoolyOS] > ");
+          continue;
+      }
+
+      if (input == '\b') {
+          if (input_len > 0) {
+              input_len--;
+              terminal_putchar('\b');
+          }
+          continue;
+      }
+
+      if (input_len < INPUT_BUFFER - 1) {
+          input_buf[input_len++] = input;
+          terminal_putchar(input);
+      }
   }
+
 }
 

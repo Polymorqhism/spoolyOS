@@ -158,7 +158,7 @@ terminal_write_string:
 ; Note: 
 ; - The string is looped through twice on printing. 
 
-hello_string db "hello chat its me spooly", 0xA, 0 ; 0xA = line feed
+hello_string db "well this shouldn't appear...", 0xA, 0 ; 0xA = line feed
 
 terminal_color db 0
 
