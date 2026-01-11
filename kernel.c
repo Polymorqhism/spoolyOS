@@ -26,6 +26,12 @@ enum vga_color {
 };
 
 
+char *banner = "
+┌─┐┌─┐┌─┐┌─┐┬ ┬ ┬┌─┐┌─┐
+└─┐├─┘│ ││ ││ └┬┘│ │└─┐
+└─┘┴  └─┘└─┘┴─┘┴ └─┘└─┘
+"
+
 static inline uint8_t vga_entry_color(enum vga_color fg, enum vga_color bg) 
 {
 	return fg | bg << 4;
@@ -43,15 +49,6 @@ size_t strlen(const char* str)
 		len++;
 	return len;
 }
-
-static const char scancode_ascii[] = {
-    0,  27, '1','2','3','4','5','6','7','8','9','0','-','=', '\b',
-    '\t','q','w','e','r','t','y','u','i','o','p','[',']','\n',
-    0,   'a','s','d','f','g','h','j','k','l',';','\'','`',
-    0,   '\\','z','x','c','v','b','n','m',',','.','/',
-    0,   '*', 0,  ' '
-};
-
 #define VGA_WIDTH   80
 #define VGA_HEIGHT  25
 #define VGA_MEMORY  0xB8000 
@@ -316,8 +313,9 @@ void handle_command(char *string) {
   } else if(!(cmpstr(command, "color"))) {
     terminal_setcolor(str_to_uint8(args[1]));
   }else if(!(cmpstr(command, "echo"))) {
-    for(int i = 0; i!=MAX_ARGS; i++) {
+    for(int i = 1; i!=MAX_ARGS; i++) {
       terminal_writestring(args[i]);
+      terminal_putchar(' ');
     }
   }else {
     terminal_writestring("Command not found: ");
