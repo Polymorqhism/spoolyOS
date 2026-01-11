@@ -1,0 +1,1 @@
+/usr/bin/i686-elf-gcc -T /home/forever/Projects/kernel/linker/linker.ld -ffreestanding -nostdlib -no-pie CMakeFiles/spoolyos.bin.dir/kernel.c.obj CMakeFiles/spoolyos.bin.dir/kernel.asm.obj -o spoolyos.bin  -lgcc

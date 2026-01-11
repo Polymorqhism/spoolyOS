@@ -1,0 +1,8 @@
+{
+	"InstallScripts" : 
+	[
+		"/home/forever/Projects/kernel/build/cmake_install.cmake",
+		"/home/forever/Projects/kernel/build/kernel/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

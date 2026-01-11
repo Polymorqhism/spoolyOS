@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/forever/Projects/kernel/build/kernel",
+  "command": "/usr/bin/i686-elf-gcc  -I/home/forever/Projects/kernel/kernel/include -std=gnu17 -ffreestanding -Wall -Wextra -fno-pie -fno-stack-protector -o CMakeFiles/spoolyos.bin.dir/kernel.c.obj -c /home/forever/Projects/kernel/kernel/kernel.c",
+  "file": "/home/forever/Projects/kernel/kernel/kernel.c",
+  "output": "kernel/CMakeFiles/spoolyos.bin.dir/kernel.c.obj"
+}
+]

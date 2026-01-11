@@ -1,0 +1,5 @@
+/home/forever/Projects/kernel/build/CMakeFiles/edit_cache.dir
+/home/forever/Projects/kernel/build/CMakeFiles/rebuild_cache.dir
+/home/forever/Projects/kernel/build/kernel/CMakeFiles/spoolyos.bin.dir
+/home/forever/Projects/kernel/build/kernel/CMakeFiles/edit_cache.dir
+/home/forever/Projects/kernel/build/kernel/CMakeFiles/rebuild_cache.dir
