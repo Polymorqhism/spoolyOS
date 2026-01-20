@@ -1,5 +1,6 @@
 ## spoolyOS
 
+
 C, Assembly, and a dream!
 
 creds:
@@ -17,3 +18,6 @@ run:
 ```
 
 I am too lazy to write all the dependencies you need to build this thing so I'll leave it to poly.
+
+### ARCHIVED TEMPORARILY
+archived until april 2026
